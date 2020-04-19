@@ -3,9 +3,10 @@ $.ajax({
     url: "/api/news"
 })
 .then(function(res){  
-for (let i = 0; i < res.length; i++) {
+    console.log(res);
+    
+for (let i = 0; i < res.length; i++) {    
     var link = $("<a>");
-    ;
     var newsDisplay = $("<div id='newsDisplay' class='col-md-12'>");
     newsDisplay.text(res[i].headline)
     link.attr("href", "https://www.nytimes.com" + res[i].link);
