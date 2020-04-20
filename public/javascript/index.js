@@ -25,36 +25,51 @@ $.ajax({
             container.append(newsdisplay);
             $("#newsContainer").append(container);
         };
-        $(".saveButton").on("click", function(){   
+        $(".saveButton").on("click", function () {
             idObj = {
                 id: $(this).val()
-            };   
+            };
             $.ajax({
                 method: "POST",
                 url: "/api/save",
                 data: idObj
             });
         });
-        $(".noteButton").on("click", function(){
+        $(".noteButton").on("click", function () {
+            var saveNoteId = $(this).val();
             var noteHolder = $("<div>");
             noteHolder.attr("id", "noteHolder");
-            var noteInput = $("<input class='input' id='noteInput'>");
+            var noteInput = $("<input id='noteInput'>");
             var submitButton = $("<button id='noteSubmit' class='btn btn-primary'>");
+            submitButton.attr
             var closeNoteButton = $("<button id='closeNote'>");
             closeNoteButton.text("X")
-            submitButton.text("Add note")
+            submitButton.text("Add note");
+            submitButton.attr("value", saveNoteId)
             noteHolder.append(noteInput);
             noteHolder.append(submitButton);
             noteHolder.prepend(closeNoteButton)
             $("#newsContainer").prepend(noteHolder);
-            $("#closeNote").on("click", function(){
-            $("#noteHolder").empty();
+            $("#closeNote").on("click", function () {
+                $("#noteHolder").empty();
+            });
+            $("#noteSubmit").on("click", function(){
+                var note = $("#noteInput").val().trim();
+                var noteObj = {
+                    note: note,
+                    id: saveNoteId
+                };
+                $.ajax({
+                    method: "POST",
+                    url: "/api/note/save",
+                    data: noteObj
+                }).then($("#noteHolder").append("Note added"));
             });
         });
-     
+
     });
- 
-    $.ajax({
+
+$.ajax({
         method: "GET",
         url: "/api/saved"
     })
@@ -78,7 +93,7 @@ $.ajax({
             $("#savedNewsContainer").append(container);
         };
 
-        $(".deleteButton").on("click", function(){
+        $(".deleteButton").on("click", function () {
             var deleteObj = {
                 id: $(this).val()
             };
@@ -88,4 +103,5 @@ $.ajax({
                 data: deleteObj
             }).then(location.reload());
         });
+        
     });

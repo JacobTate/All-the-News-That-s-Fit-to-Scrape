@@ -19,7 +19,6 @@ module.exports = function (app) {
                 })
                 .then(function (dbNews) {})
                 .catch(function (err) {
-                    //  console.log("error");
                 });
         });
     });
@@ -62,11 +61,15 @@ module.exports = function (app) {
             });
     });
     app.get("/api/saved/delete", function (req, res) {
-        console.log(req.query.id);
         db.Saved.deleteOne({
             _id: req.query.id
         }, function (err) {
             if (err) return handleError(err);
         });
+    });
+    app.post("/api/note/save", function(req, res){
+        console.log(req.body);
+        db.Note.create({body: req.body.note});
+        
     });
 };
