@@ -38,8 +38,6 @@ $.ajax({
         url: "/api/saved"
     })
     .then(function (res) {
-        console.log(res);
-        
         for (let i = 0; i < res.length; i++) {
             var container = $("<div class='container'>");
             var link = $("<a>");
@@ -58,4 +56,15 @@ $.ajax({
             container.append(newsdisplay);
             $("#savedNewsContainer").append(container);
         };
+
+        $(".deleteButton").on("click", function(){
+            var deleteObj = {
+                id: $(this).val()
+            }
+            $.ajax({
+                method: "GET",
+                url: "/api/saved/delete",
+                data: deleteObj
+            }).then(location.reload());
+        });
     });

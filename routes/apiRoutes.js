@@ -41,7 +41,9 @@ module.exports = function (app) {
         });
 
     app.post("/api/save", function (req, res) {
-        db.News.find({ _id: req.body.id})
+        db.News.find({
+                _id: req.body.id
+            })
             .then(function (dbNews) {
                 for (let j = 0; j < dbNews.length; j++) {
                     db.Saved.create({
@@ -53,10 +55,18 @@ module.exports = function (app) {
             })
             .catch(function () {});
     });
-    app.get("/api/saved", function(req, res){
-db.Saved.find({})
-.then(function(dbNews){
-res.json(dbNews)
-});
+    app.get("/api/saved", function (req, res) {
+        db.Saved.find({})
+            .then(function (dbNews) {
+                res.json(dbNews)
+            });
+    });
+    app.get("/api/saved/delete", function (req, res) {
+        console.log(req.query.id);
+        db.Saved.deleteOne({
+            _id: req.query.id
+        }, function (err) {
+            if (err) return handleError(err);
+        });
     });
 };
