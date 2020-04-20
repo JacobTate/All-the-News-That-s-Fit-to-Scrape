@@ -52,6 +52,11 @@ module.exports = function (app) {
                 };
             })
             .catch(function () {});
-
+    });
+    app.get("/api/saved", function(req, res){
+db.Saved.find({})
+.then(function(dbNews){
+res.json(dbNews)
+});
     });
 };
