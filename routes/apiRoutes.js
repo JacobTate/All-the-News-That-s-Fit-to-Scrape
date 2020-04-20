@@ -19,7 +19,7 @@ module.exports = function (app) {
                 })
                 .then(function (dbNews) {})
                 .catch(function (err) {
-                    console.log("error");
+                    //  console.log("error");
                 });
         });
     });
@@ -28,6 +28,7 @@ module.exports = function (app) {
             var results = [];
             for (let i = 0; i < dbNews.length; i++) {
                 var newsObj = {
+                    id: dbNews[i]._id,
                     headline: dbNews[i].headline,
                     link: dbNews[i].link,
                     body: dbNews[i].body
@@ -39,5 +40,18 @@ module.exports = function (app) {
             });
         });
 
-        
+    app.post("/api/save", function (req, res) {
+        db.News.find({ _id: req.body.id})
+            .then(function (dbNews) {
+                for (let j = 0; j < dbNews.length; j++) {
+                    db.Saved.create({
+                        headline: dbNews[j].headline,
+                        link: dbNews[j].link,
+                        body: dbNews[j].body
+                    });
+                };
+            })
+            .catch(function () {});
+
+    });
 };

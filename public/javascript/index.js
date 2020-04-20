@@ -10,7 +10,8 @@ $.ajax({
             link.text(res[i].headline);
             var newsdisplay = $("<div id='newsDisplay' class='col-md-12'>")
             newsdisplay.text(res[i].body);
-            var saveButton = $("<button id='saveButton'>");
+            var saveButton = $("<button class='saveButton'>");
+            saveButton.attr("value", res[i].id)
             saveButton.text("Save");
             link.attr("href", "https://www.nytimes.com" + res[i].link);
             link.attr("target", "_blank")
@@ -20,5 +21,22 @@ $.ajax({
             container.append(newsdisplay);
             $(".jumbotron").append(container);
         };
+        $(".saveButton").on("click", function(){   
+            idObj = {
+                id: $(this).val()
+            };   
+            $.ajax({
+                method: "POST",
+                url: "/api/save",
+                data: idObj
+            });
+        });
     });
-   
+ 
+    // $.ajax({
+    //     method: "GET",
+    //     url: "/api/saved"
+    // })
+    // .then(function (res) {
+    //     console.log(res);
+    // });
