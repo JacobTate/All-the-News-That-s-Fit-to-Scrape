@@ -8,15 +8,19 @@ $.ajax({
             var link = $("<a>");
             var headlineDisplay = $("<div id='headlineDisplay' class='col-md-12'>");
             link.text(res[i].headline);
-            var newsdisplay = $("<div id='newsDisplay' class='col-md-12'>")
+            var newsdisplay = $("<div id='newsDisplay' class='col-md-12 m-2'>")
             newsdisplay.text(res[i].body);
             var saveButton = $("<button class='saveButton'>");
+            var noteButton = $("<button class='noteButton m-2'>");
+            noteButton.attr("value", res[i].id)
+            noteButton.text("Add a note");
             saveButton.attr("value", res[i].id)
             saveButton.text("Save");
             link.attr("href", "https://www.nytimes.com" + res[i].link);
             link.attr("target", "_blank")
             headlineDisplay.append(link);
             headlineDisplay.append(saveButton);
+            headlineDisplay.append(noteButton);
             container.prepend(headlineDisplay);
             container.append(newsdisplay);
             $("#newsContainer").append(container);
@@ -31,6 +35,23 @@ $.ajax({
                 data: idObj
             });
         });
+        $(".noteButton").on("click", function(){
+            var noteHolder = $("<div>");
+            noteHolder.attr("id", "noteHolder");
+            var noteInput = $("<input class='input' id='noteInput'>");
+            var submitButton = $("<button id='noteSubmit' class='btn btn-primary'>");
+            var closeNoteButton = $("<button id='closeNote'>");
+            closeNoteButton.text("X")
+            submitButton.text("Add note")
+            noteHolder.append(noteInput);
+            noteHolder.append(submitButton);
+            noteHolder.prepend(closeNoteButton)
+            $("#newsContainer").prepend(noteHolder);
+            $("#closeNote").on("click", function(){
+            $("#noteHolder").empty();
+            });
+        });
+     
     });
  
     $.ajax({
@@ -60,7 +81,7 @@ $.ajax({
         $(".deleteButton").on("click", function(){
             var deleteObj = {
                 id: $(this).val()
-            }
+            };
             $.ajax({
                 method: "GET",
                 url: "/api/saved/delete",
