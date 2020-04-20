@@ -7,6 +7,9 @@ var NewsSchema = new Schema({
     },
     link: {
         type: String
+    },
+    body: {
+        type: String
     }
     // notes: [
     //     {

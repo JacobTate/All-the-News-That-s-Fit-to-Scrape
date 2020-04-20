@@ -10,14 +10,16 @@ module.exports = function (app) {
         var $ = cheerio.load(response.data);
         $("article.css-8atqhb").each(function (i, element) {
             var headline = $(element).text();
-            var link = $(this).find("a").attr("href")
+            var link = $(this).find("a").attr("href");
+            var body = $(this).find("p.e1n8kpyg0").text();
             db.News.create({
                     headline: headline,
-                    link: link
+                    link: link,
+                    body: body
                 })
                 .then(function (dbNews) {})
                 .catch(function (err) {
-                    console.log(err);
+                    console.log("error");
                 });
         });
     });
@@ -27,13 +29,15 @@ module.exports = function (app) {
             for (let i = 0; i < dbNews.length; i++) {
                 var newsObj = {
                     headline: dbNews[i].headline,
-                    link: dbNews[i].link
+                    link: dbNews[i].link,
+                    body: dbNews[i].body
                 };
                 results.push(newsObj);
-            }; 
+            };
             app.get("/api/news", function (req, res) {
                 res.json(results);
             });
-        })
+        });
 
+        
 };
