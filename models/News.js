@@ -10,13 +10,13 @@ var NewsSchema = new Schema({
     },
     body: {
         type: String
-    }
-    // notes: [
-    //     {
-    //         type: Schema.Types.ObjectId,
-    //         ref: "Note"
-    //     }
-    // ]
+    },
+    notes: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: "Note"
+        }
+    ]
 });
 var News = mongoose.model("News", NewsSchema);
 module.exports = News;

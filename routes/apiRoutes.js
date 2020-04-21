@@ -18,8 +18,7 @@ module.exports = function (app) {
                     body: body
                 })
                 .then(function (dbNews) {})
-                .catch(function (err) {
-                });
+                .catch(function (err) {});
         });
     });
     db.News.find({})
@@ -67,9 +66,19 @@ module.exports = function (app) {
             if (err) return handleError(err);
         });
     });
-    app.post("/api/note/save", function(req, res){
-        console.log(req.body);
-        db.Note.create({body: req.body.note});
+    app.post("/api/note/save", function (req, res) {
+        console.log(req.body.id);
         
+        db.Note.create({
+                body: req.body.note
+            })
+            .then(function(dbNote){
+                
+                return db.News.findOneAndUpdate({_id: req.body.id}, { $push: { notes: dbNote._id } }, { new: true });
+            }).then(function(dbNews){
+                res.json(dbNews)
+            }).catch(function(err){
+                res.json(err)
+            })
     });
 };
