@@ -1,3 +1,4 @@
+var isNoteOpen = false;
 $.ajax({
         method: "GET",
         url: "/api/news"
@@ -36,6 +37,8 @@ $.ajax({
             });
         });
         $(".noteButton").on("click", function () {
+            if(!isNoteOpen){
+                isNoteOpen = true;
             let saveNoteId = $(this).val();
             let saveNoteIdObj = {
                 id: saveNoteId
@@ -51,6 +54,7 @@ $.ajax({
             noteHolder.append(noteInput);
             noteHolder.append(submitButton);
             noteHolder.prepend(closeNoteButton)
+            noteHolder.append("<ul id='noteList'>")
             $("#newsContainer").prepend(noteHolder);
             $.ajax({
                 method: "GET",
@@ -72,7 +76,15 @@ $.ajax({
                         url: "/api/note/find",
                         data: noteIdObj
                     }).then(res => {
-                        console.log(res); 
+                        for (let i = 0; i < res.note.length; i++) {
+                            let li = $("<li>")
+                            li.text(res.note[i].body)
+                            let removeNoteBtn = $("<button class='removeNote'>");
+                            removeNoteBtn.attr("value", res.note[i]._id);
+                            removeNoteBtn.text("Remove Note");
+                            li.append(removeNoteBtn);
+                            $("#noteList").append(li);
+                        };
                     });
                 };
             });
@@ -95,6 +107,11 @@ $.ajax({
                     alert("Note added")
                 });
             });
+        }
+        else{
+            $("#noteHolder").empty();
+            isNoteOpen = false;
+        };
         });
 
     });
