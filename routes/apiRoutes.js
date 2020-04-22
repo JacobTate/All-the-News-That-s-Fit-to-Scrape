@@ -1,17 +1,17 @@
 module.exports = function (app) {
-    var cheerio = require("cheerio");
-    var axios = require("axios");
-    var db = require("../models")
-    var mongoose = require("mongoose");
+    const cheerio = require("cheerio");
+    const axios = require("axios");
+    const db = require("../models")
+    const mongoose = require("mongoose");
     mongoose.connect("mongodb://localhost/newsDb", {
         useNewUrlParser: true
     });
     axios.get("https://www.nytimes.com/").then(function (response) {
-        var $ = cheerio.load(response.data);
+        const $ = cheerio.load(response.data);
         $("article.css-8atqhb").each(function (i, element) {
-            var headline = $(element).text();
-            var link = $(this).find("a").attr("href");
-            var body = $(this).find("p.e1n8kpyg0").text();
+            const headline = $(element).text();
+            const link = $(this).find("a").attr("href");
+            const body = $(this).find("p.e1n8kpyg0").text();
             db.News.create({
                     headline: headline,
                     link: link,
@@ -23,13 +23,14 @@ module.exports = function (app) {
     });
     db.News.find({})
         .then(function (dbNews) {
-            var results = [];
+            let results = [];
             for (let i = 0; i < dbNews.length; i++) {
-                var newsObj = {
+                let newsObj = {
                     id: dbNews[i]._id,
                     headline: dbNews[i].headline,
                     link: dbNews[i].link,
-                    body: dbNews[i].body
+                    body: dbNews[i].body,
+                    note: dbNews[i].notes
                 };
                 results.push(newsObj);
             };
@@ -68,17 +69,50 @@ module.exports = function (app) {
     });
     app.post("/api/note/save", function (req, res) {
         console.log(req.body.id);
-        
+
         db.Note.create({
                 body: req.body.note
             })
-            .then(function(dbNote){
-                
-                return db.News.findOneAndUpdate({_id: req.body.id}, { $push: { notes: dbNote._id } }, { new: true });
-            }).then(function(dbNews){
+            .then(function (dbNote) {
+
+                return db.News.findOneAndUpdate({
+                    _id: req.body.id
+                }, {
+                    $push: {
+                        notes: dbNote._id
+                    }
+                }, {
+                    new: true
+                });
+            }).then(function (dbNews) {
                 res.json(dbNews)
-            }).catch(function(err){
+            }).catch(function (err) {
                 res.json(err)
             })
+    });
+    app.get("/api/note/findId", function (req, res) {
+        db.News.find({
+            _id: req.query.id
+        }).then(dbNews => {
+            res.json(dbNews[0].notes)
+        });
+    });
+    app.get("/api/note/find", function (req, res) {
+        const noteId = req.query.noteId;
+        db.Note.find({})
+            .then(function (dbNote) {
+                var noteArr = [];
+                for (let x = 0; x < dbNote.length; x++) {
+                    for (let i = 0; i < noteId.length; i++) {
+                        if (dbNote[x]._id == noteId[i]) {
+                            noteArr.push(dbNote[x])
+                        };
+                    };
+                };
+                let noteObj = {
+                    note: noteArr
+                };
+                res.json(noteObj)
+            });
     });
 };

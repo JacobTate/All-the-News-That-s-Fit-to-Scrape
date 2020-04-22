@@ -4,14 +4,14 @@ $.ajax({
     })
     .then(function (res) {
         for (let i = 0; i < res.length; i++) {
-            var container = $("<div class='container'>");
-            var link = $("<a>");
-            var headlineDisplay = $("<div id='headlineDisplay' class='col-md-12'>");
+            let container = $("<div class='container'>");
+            let link = $("<a>");
+            let headlineDisplay = $("<div id='headlineDisplay' class='col-md-12'>");
             link.text(res[i].headline);
-            var newsdisplay = $("<div id='newsDisplay' class='col-md-12 m-2'>")
+            let newsdisplay = $("<div id='newsDisplay' class='col-md-12 m-2'>")
             newsdisplay.text(res[i].body);
-            var saveButton = $("<button class='saveButton'>");
-            var noteButton = $("<button class='noteButton m-2'>");
+            let saveButton = $("<button class='saveButton'>");
+            let noteButton = $("<button class='noteButton m-2'>");
             noteButton.attr("value", res[i].id)
             noteButton.text("Add a note");
             saveButton.attr("value", res[i].id)
@@ -36,13 +36,15 @@ $.ajax({
             });
         });
         $(".noteButton").on("click", function () {
-            var saveNoteId = $(this).val();
-            var noteHolder = $("<div>");
+            let saveNoteId = $(this).val();
+            let saveNoteIdObj = {
+                id: saveNoteId
+            };
+            let noteHolder = $("<div>");
             noteHolder.attr("id", "noteHolder");
-            var noteInput = $("<input id='noteInput'>");
-            var submitButton = $("<button id='noteSubmit' class='btn btn-primary'>");
-            submitButton.attr
-            var closeNoteButton = $("<button id='closeNote'>");
+            let noteInput = $("<input id='noteInput'>");
+            let submitButton = $("<button id='noteSubmit' class='btn btn-primary'>");
+            let closeNoteButton = $("<button id='closeNote'>");
             closeNoteButton.text("X")
             submitButton.text("Add note");
             submitButton.attr("value", saveNoteId)
@@ -50,12 +52,37 @@ $.ajax({
             noteHolder.append(submitButton);
             noteHolder.prepend(closeNoteButton)
             $("#newsContainer").prepend(noteHolder);
+            $.ajax({
+                method: "GET",
+                url: "/api/note/findId",
+                data: saveNoteIdObj
+            }).then(res => {
+                if (res.length === 0) {
+                    $("#noteHolder").append("<p>No Notes</p>")
+                } else {
+                    let noteIdArr = [];
+                    for (let x = 0; x < res.length; x++) {
+                        noteIdArr.push(res[x]);
+                    };
+                    let noteIdObj = {
+                        noteId: noteIdArr
+                    }
+                    $.ajax({
+                        method: "GET",
+                        url: "/api/note/find",
+                        data: noteIdObj
+                    }).then(res => {
+                        console.log(res); 
+                    });
+                };
+            });
+            //==============================================
             $("#closeNote").on("click", function () {
                 $("#noteHolder").empty();
             });
-            $("#noteSubmit").on("click", function(){
-                var note = $("#noteInput").val().trim();
-                var noteObj = {
+            $("#noteSubmit").on("click", function () {
+                let note = $("#noteInput").val().trim();
+                let noteObj = {
                     note: note,
                     id: saveNoteId
                 };
@@ -63,7 +90,10 @@ $.ajax({
                     method: "POST",
                     url: "/api/note/save",
                     data: noteObj
-                }).then($("#noteHolder").append("Note added"));
+                }).then(function () {
+                    $("#noteHolder").empty();
+                    alert("Note added")
+                });
             });
         });
 
@@ -75,13 +105,13 @@ $.ajax({
     })
     .then(function (res) {
         for (let i = 0; i < res.length; i++) {
-            var container = $("<div class='container'>");
-            var link = $("<a>");
-            var headlineDisplay = $("<div id='headlineDisplay' class='col-md-12'>");
+            let container = $("<div class='container'>");
+            let link = $("<a>");
+            let headlineDisplay = $("<div id='headlineDisplay' class='col-md-12'>");
             link.text(res[i].headline);
-            var newsdisplay = $("<div id='newsDisplay' class='col-md-12'>")
+            let newsdisplay = $("<div id='newsDisplay' class='col-md-12'>")
             newsdisplay.text(res[i].body);
-            var deleteButton = $("<button class='deleteButton'>");
+            let deleteButton = $("<button class='deleteButton'>");
             deleteButton.attr("value", res[i]._id)
             deleteButton.text("Delete From Saved");
             link.attr("href", "https://www.nytimes.com" + res[i].link);
@@ -94,7 +124,7 @@ $.ajax({
         };
 
         $(".deleteButton").on("click", function () {
-            var deleteObj = {
+            let deleteObj = {
                 id: $(this).val()
             };
             $.ajax({
@@ -103,5 +133,5 @@ $.ajax({
                 data: deleteObj
             }).then(location.reload());
         });
-        
+
     });
