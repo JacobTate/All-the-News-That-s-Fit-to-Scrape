@@ -1,10 +1,15 @@
 var isNoteOpen = false;
 var isSavedNoteOpen = false;
+$("#articleDisplay").on("click", function(e){
+    e.preventDefault();
+
+
 $.ajax({
         method: "GET",
         url: "/api/news"
     })
     .then(function (res) {
+        alert(`Added: ${res.length} articles`)
         for (let i = 0; i < res.length; i++) {
             let container = $("<div class='container'>");
             let link = $("<a>");
@@ -35,7 +40,7 @@ $.ajax({
                 method: "POST",
                 url: "/api/save",
                 data: idObj
-            }).then(alert("Note saved"));
+            }).then(alert("Article saved"));
         });
         $(".noteButton").on("click", function () {
             if (!isNoteOpen) {
@@ -131,6 +136,7 @@ $.ajax({
             };
         });
     });
+});
 $.ajax({
         method: "GET",
         url: "/api/saved"

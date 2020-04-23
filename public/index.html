@@ -51,11 +51,25 @@ a:hover {
     background-color: darkblue;
     color: red;
 }
+#header{
+    background-image: url("https://cdn.britannica.com/25/93825-050-D1300547/collection-newspapers.jpg");
+     height: 400px;
+     border: black 1px solid;
+     border-radius: 10px;
+}
+#header h1{
+   color: red;
+   text-align: center;
+   margin-top: 175px;
+}
 </style>
 <body>
     <div class="jumbotron" id="newsContainer">
         <a href="/saved" class="btn btn-primary">Saved articles</a>
-       <div class="jumbotron-primary m-2" style=" background-color: blue; height: 200px; border: black 1px solid; border-radius: 10px;">Stolen News</div>
+        <button class="btn btn-primary" id="articleDisplay">View Articles</button>
+       <div class="jumbotron-primary m-2" id="header">
+<h1>NyTimes Article search</h1>
+       </div>
     </div>
     <script src="/javascript/index.js"></script>
 </body>
