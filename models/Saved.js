@@ -10,13 +10,11 @@ var NewsSchema = new Schema({
     },
     body: {
         type: String
-    }
-    // notes: [
-    //     {
-    //         type: Schema.Types.ObjectId,
-    //         ref: "Note"
-    //     }
-    // ]
+    },
+    notes: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Note'
+      }]
 });
 var Saved = mongoose.model("Saved", NewsSchema);
 module.exports = Saved;

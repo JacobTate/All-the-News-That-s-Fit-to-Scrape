@@ -124,7 +124,63 @@ module.exports = function (app) {
                 res.json(dbNote)
             });
 
+    });
+    //========================================================================================================
+    //routes for the saved notes
+    app.post("/api/note/saved/save", function (req, res) {
+        db.Note.create({
+                body: req.body.note
+            })
+            .then(function (dbNote) {
 
+                return db.Saved.findOneAndUpdate({
+                    _id: req.body.id
+                }, {
+                    $push: {
+                        notes: dbNote._id
+                    }
+                }, {
+                    new: true
+                });
+            }).then(function (dbNews) {
+                res.json(dbNews)
+            }).catch(function (err) {
+                res.json(err)
+            })
+    });
+    app.get("/api/note/saved/findId", function (req, res) {
+        db.Saved.find({
+            _id: req.query.id
+        }).then(dbNews => {
+            res.json(dbNews[0].notes);
+        });
+    });
+    app.get("/api/note/saved/find", function (req, res) {
+        const noteId = req.query.noteId; 
+        db.Note.find({})
+            .then(function (dbNote) {
+                var noteArr = [];
+                for (let x = 0; x < dbNote.length; x++) { 
+                    for (let i = 0; i < noteId.length; i++) {
+                        if (dbNote[x]._id == noteId[i]) {
+                            noteArr.push(dbNote[x])
+                        };
+                    };
+                };
+                let noteObj = {
+                    note: noteArr
+                };
+                res.json(noteObj)
+            });
+    });
+    app.get("/api/note/saved/remove", function (req, res) {
+        let noteId = req.query.noteId;
+        db.Note.deleteOne({
+                _id: noteId
+            })
+            .then(function (dbNote) {
+                res.json(dbNote)
+            });
 
     });
 };
