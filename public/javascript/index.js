@@ -14,7 +14,7 @@ $.ajax({
             let saveButton = $("<button class='saveButton'>");
             let noteButton = $("<button class='noteButton m-2'>");
             noteButton.attr("value", res[i].id)
-            noteButton.text("Add a note");
+            noteButton.text("Notes");
             saveButton.attr("value", res[i].id)
             saveButton.text("Save");
             link.attr("href", "https://www.nytimes.com" + res[i].link);
@@ -37,81 +37,97 @@ $.ajax({
             });
         });
         $(".noteButton").on("click", function () {
-            if(!isNoteOpen){
+            if (!isNoteOpen) {
                 isNoteOpen = true;
-            let saveNoteId = $(this).val();
-            let saveNoteIdObj = {
-                id: saveNoteId
-            };
-            let noteHolder = $("<div>");
-            noteHolder.attr("id", "noteHolder");
-            let noteInput = $("<input id='noteInput'>");
-            let submitButton = $("<button id='noteSubmit' class='btn btn-primary'>");
-            let closeNoteButton = $("<button id='closeNote'>");
-            closeNoteButton.text("X")
-            submitButton.text("Add note");
-            submitButton.attr("value", saveNoteId)
-            noteHolder.append(noteInput);
-            noteHolder.append(submitButton);
-            noteHolder.prepend(closeNoteButton)
-            noteHolder.append("<ul id='noteList'>")
-            $("#newsContainer").prepend(noteHolder);
-            $.ajax({
-                method: "GET",
-                url: "/api/note/findId",
-                data: saveNoteIdObj
-            }).then(res => {
-                if (res.length === 0) {
-                    $("#noteHolder").append("<p>No Notes</p>")
-                } else {
-                    let noteIdArr = [];
-                    for (let x = 0; x < res.length; x++) {
-                        noteIdArr.push(res[x]);
-                    };
-                    let noteIdObj = {
-                        noteId: noteIdArr
-                    }
-                    $.ajax({
-                        method: "GET",
-                        url: "/api/note/find",
-                        data: noteIdObj
-                    }).then(res => {
-                        for (let i = 0; i < res.note.length; i++) {
-                            let li = $("<li>")
-                            li.text(res.note[i].body)
-                            let removeNoteBtn = $("<button class='removeNote'>");
-                            removeNoteBtn.attr("value", res.note[i]._id);
-                            removeNoteBtn.text("Remove Note");
-                            li.append(removeNoteBtn);
-                            $("#noteList").append(li);
-                        };
-                    });
-                };
-            });
-            //==============================================
-            $("#closeNote").on("click", function () {
-                $("#noteHolder").empty();
-            });
-            $("#noteSubmit").on("click", function () {
-                let note = $("#noteInput").val().trim();
-                let noteObj = {
-                    note: note,
+                let saveNoteId = $(this).val();
+                let saveNoteIdObj = {
                     id: saveNoteId
                 };
+                let noteHolder = $("<div>");
+                noteHolder.attr("id", "noteHolder");
+                let noteInput = $("<input id='noteInput'>");
+                let submitButton = $("<button id='noteSubmit' class='btn btn-primary'>");
+                let closeNoteButton = $("<button id='closeNote'>");
+                closeNoteButton.text("X")
+                submitButton.text("Add note");
+                submitButton.attr("value", saveNoteId)
+                noteHolder.append(noteInput);
+                noteHolder.append(submitButton);
+                noteHolder.prepend(closeNoteButton)
+                noteHolder.append("<ul id='noteList'>")
+                $("#newsContainer").prepend(noteHolder);
                 $.ajax({
-                    method: "POST",
-                    url: "/api/note/save",
-                    data: noteObj
-                }).then(function () {
-                    $("#noteHolder").empty();
-                    alert("Note added")
+                    method: "GET",
+                    url: "/api/note/findId",
+                    data: saveNoteIdObj
+                }).then(res => {
+                    if (res.length === 0) {
+                        $("#noteHolder").append("<p>No Notes</p>")
+                    } else {
+                        let noteIdArr = [];
+                        for (let x = 0; x < res.length; x++) {
+                            noteIdArr.push(res[x]);
+                        };
+                        let noteIdObj = {
+                            noteId: noteIdArr
+                        }
+                        $.ajax({
+                            method: "GET",
+                            url: "/api/note/find",
+                            data: noteIdObj
+                        }).then(res => {
+                            for (let i = 0; i < res.note.length; i++) {
+                                let li = $("<li>")
+                                li.text(res.note[i].body)
+                                let removeNoteBtn = $("<button class='removeNote'>");
+                                removeNoteBtn.attr("value", res.note[i]._id);
+                                removeNoteBtn.text("Remove Note");
+                                li.append(removeNoteBtn);
+                                $("#noteList").append(li);
+                            };
+                            $(".removeNote").on("click", function (e) {
+                                e.preventDefault();
+                                let noteToRemove = $(this).val();
+                                let noteToRemoveObj = {
+                                    noteId: noteToRemove
+                                };
+                                $.ajax({
+                                    method: "GET",
+                                    url: "/api/note/remove",
+                                    data: noteToRemoveObj
+                                }).then(res => {
+                                    isNoteOpen = false;
+                                    location.reload();
+                                });
+                            });
+                        });
+                    };
                 });
-            });
-        }
-        else{
-            $("#noteHolder").empty();
-            isNoteOpen = false;
-        };
+                $("#closeNote").on("click", function () {
+                    $("#noteHolder").empty();
+                    isNoteOpen = false;
+                });
+                $("#noteSubmit").on("click", function () {
+                    let note = $("#noteInput").val().trim();
+                    let noteObj = {
+                        note: note,
+                        id: saveNoteId
+                    };
+                    $.ajax({
+                        method: "POST",
+                        url: "/api/note/save",
+                        data: noteObj
+                    }).then(function () {
+                        $("#noteHolder").empty();
+                        alert("Note added");
+                        isNoteOpen = false;
+                    });
+                });
+
+            } else {
+                $("#noteHolder").empty();
+                isNoteOpen = false;
+            };
         });
 
     });

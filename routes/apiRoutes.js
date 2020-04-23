@@ -115,4 +115,16 @@ module.exports = function (app) {
                 res.json(noteObj)
             });
     });
+    app.get("/api/note/remove", function (req, res) {
+        let noteId = req.query.noteId;
+        db.Note.deleteOne({
+                _id: noteId
+            })
+            .then(function (dbNote) {
+                res.json(dbNote)
+            });
+
+
+
+    });
 };
