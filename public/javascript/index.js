@@ -162,7 +162,6 @@ $.ajax({
             container.append(newsdisplay);
             $("#savedNewsContainer").append(container);
         };
-
         $(".deleteButton").on("click", function () {
             let deleteObj = {
                 id: $(this).val()
