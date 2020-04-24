@@ -3,7 +3,8 @@ module.exports = function (app) {
     const axios = require("axios");
     const db = require("../models")
     const mongoose = require("mongoose");
-    mongoose.connect("mongodb://localhost/newsDb", {
+    const mongodb_url = process.env.MONGODB_URL || "mongodb://localhost/newsDb";
+    mongoose.connect(mongodb_url, {
         useNewUrlParser: true
     });
     axios.get("https://www.nytimes.com/").then(function (response) {
