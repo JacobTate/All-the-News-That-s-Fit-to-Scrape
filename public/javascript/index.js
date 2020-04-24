@@ -2,8 +2,6 @@ var isNoteOpen = false;
 var isSavedNoteOpen = false;
 $("#articleDisplay").on("click", function(e){
     e.preventDefault();
-
-
 $.ajax({
         method: "GET",
         url: "/api/news"
