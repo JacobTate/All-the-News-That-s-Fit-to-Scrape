@@ -1,7 +1,7 @@
 module.exports = function (app) {
     const cheerio = require("cheerio");
     const axios = require("axios");
-    const db = require("../../models");
+    const db = require("../models");
     const mongoose = require("mongoose");
     const mongodb_url = process.env.MONGODB_URL || "mongodb://localhost/newsDb";
     mongoose.connect(mongodb_url, {
