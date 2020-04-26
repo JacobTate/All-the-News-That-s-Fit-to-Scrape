@@ -4,11 +4,6 @@ module.exports = function (app) {
     const News = require("../../models").News;
     const Note = require("../../models").Note;
     const Saved = require("../../models").Saved;
-    const mongoose = require("mongoose");
-    const mongodb_url = process.env.MONGODB_URL || "mongodb://localhost/newsDb";
-    mongoose.connect(mongodb_url, {
-        useNewUrlParser: true
-    });
     axios.get("https://www.nytimes.com/").then(function (response) {
         const $ = cheerio.load(response.data);
         $("article.css-8atqhb").each(function (i, element) {
