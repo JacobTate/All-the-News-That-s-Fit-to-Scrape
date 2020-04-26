@@ -19,11 +19,6 @@ var NewsSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Note'
   }],
-
-
-
-
-
 });
 
 var News = mongoose.model("News", NewsSchema);

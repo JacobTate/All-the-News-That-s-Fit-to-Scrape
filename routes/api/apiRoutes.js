@@ -1,9 +1,9 @@
+const cheerio = require("cheerio");
+const axios = require("axios");
+const News = require("../../models").News;
+const Note = require("../../models").Note;
+const Saved = require("../../models").Saved;
 module.exports = function (app) {
-    const cheerio = require("cheerio");
-    const axios = require("axios");
-    const News = require("../../models").News;
-    const Note = require("../../models").Note;
-    const Saved = require("../../models").Saved;
     axios.get("https://www.nytimes.com/").then(function (response) {
         const $ = cheerio.load(response.data);
         $("article.css-8atqhb").each(function (i, element) {

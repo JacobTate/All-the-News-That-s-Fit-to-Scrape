@@ -7,7 +7,7 @@ app.use(express.urlencoded({
 }));
 app.use(express.json());
 require("./routes/api/apiRoutes")(app);
-require("./routes/view/htmlRoutes")(app);
+require("./routes/htmlRoutes")(app);
  app.listen(PORT, function () {
      console.log("Listening on PORT:%s", PORT);
  });
