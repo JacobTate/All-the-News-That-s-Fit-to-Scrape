@@ -1,7 +1,9 @@
 module.exports = function (app) {
     const cheerio = require("cheerio");
     const axios = require("axios");
-    const db = require("../../models/index");
+    const News = require("../../models").News;
+    const Note = require("../../models").Note;
+    const Saved = require("../../models").Saved;
     const mongoose = require("mongoose");
     const mongodb_url = process.env.MONGODB_URL || "mongodb://localhost/newsDb";
     mongoose.connect(mongodb_url, {
@@ -13,7 +15,7 @@ module.exports = function (app) {
             const headline = $(element).text();
             const link = $(this).find("a").attr("href");
             const body = $(this).find("p.e1n8kpyg0").text();
-            db.News.create({
+            News.create({
                     headline: headline,
                     link: link,
                     body: body
@@ -22,7 +24,7 @@ module.exports = function (app) {
                 .catch(function (err) {});
         });
     });
-    db.News.find({})
+    News.find({})
         .then(function (dbNews) {
             let results = [];
             for (let i = 0; i < dbNews.length; i++) {
@@ -41,12 +43,12 @@ module.exports = function (app) {
         });
 
     app.post("/api/save", function (req, res) {
-        db.News.find({
+        News.find({
                 _id: req.body.id
             })
             .then(function (dbNews) {
                 for (let j = 0; j < dbNews.length; j++) {
-                    db.Saved.create({
+                    Saved.create({
                         headline: dbNews[j].headline,
                         link: dbNews[j].link,
                         body: dbNews[j].body
@@ -56,13 +58,13 @@ module.exports = function (app) {
             .catch(function () {});
     });
     app.get("/api/saved", function (req, res) {
-        db.Saved.find({})
+        Saved.find({})
             .then(function (dbNews) {
                 res.json(dbNews)
             });
     });
     app.get("/api/saved/delete", function (req, res) {
-        db.Saved.deleteOne({
+        Saved.deleteOne({
             _id: req.query.id
         }, function (err) {
             if (err) return handleError(err);
@@ -71,12 +73,12 @@ module.exports = function (app) {
     app.post("/api/note/save", function (req, res) {
         console.log(req.body.id);
 
-        db.Note.create({
+        Note.create({
                 body: req.body.note
             })
             .then(function (dbNote) {
 
-                return db.News.findOneAndUpdate({
+                return News.findOneAndUpdate({
                     _id: req.body.id
                 }, {
                     $push: {
@@ -92,7 +94,7 @@ module.exports = function (app) {
             })
     });
     app.get("/api/note/findId", function (req, res) {
-        db.News.find({
+        News.find({
             _id: req.query.id
         }).then(dbNews => {
             res.json(dbNews[0].notes)
@@ -100,7 +102,7 @@ module.exports = function (app) {
     });
     app.get("/api/note/find", function (req, res) {
         const noteId = req.query.noteId;
-        db.Note.find({})
+        Note.find({})
             .then(function (dbNote) {
                 var noteArr = [];
                 for (let x = 0; x < dbNote.length; x++) {
@@ -118,7 +120,7 @@ module.exports = function (app) {
     });
     app.get("/api/note/remove", function (req, res) {
         let noteId = req.query.noteId;
-        db.Note.deleteOne({
+        Note.deleteOne({
                 _id: noteId
             })
             .then(function (dbNote) {
@@ -129,12 +131,12 @@ module.exports = function (app) {
     //========================================================================================================
     //routes for the saved notes
     app.post("/api/note/saved/save", function (req, res) {
-        db.Note.create({
+        Note.create({
                 body: req.body.note
             })
             .then(function (dbNote) {
 
-                return db.Saved.findOneAndUpdate({
+                return Saved.findOneAndUpdate({
                     _id: req.body.id
                 }, {
                     $push: {
@@ -150,7 +152,7 @@ module.exports = function (app) {
             })
     });
     app.get("/api/note/saved/findId", function (req, res) {
-        db.Saved.find({
+        Saved.find({
             _id: req.query.id
         }).then(dbNews => {
             res.json(dbNews[0].notes);
@@ -158,7 +160,7 @@ module.exports = function (app) {
     });
     app.get("/api/note/saved/find", function (req, res) {
         const noteId = req.query.noteId; 
-        db.Note.find({})
+        Note.find({})
             .then(function (dbNote) {
                 var noteArr = [];
                 for (let x = 0; x < dbNote.length; x++) { 
@@ -176,7 +178,7 @@ module.exports = function (app) {
     });
     app.get("/api/note/saved/remove", function (req, res) {
         let noteId = req.query.noteId;
-        db.Note.deleteOne({
+        Note.deleteOne({
                 _id: noteId
             })
             .then(function (dbNote) {
