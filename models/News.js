@@ -1,5 +1,5 @@
 var mongoose = require("mongoose");
-const mongodb_url = process.env.MONGODB_URL || "mongodb://localhost/newsDb";
+const mongodb_url = process.env.MONGODB_URI || "mongodb://localhost/newsDb";
 mongoose.connect(mongodb_url, {
     useNewUrlParser: true
 });
