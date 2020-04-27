@@ -41,7 +41,7 @@ module.exports = function (app) {
             })
             .then(function (dbNews) {
                 for (let j = 0; j < dbNews.length; j++) {
-                    Saved.create({
+                    db.Saved.create({
                         headline: dbNews[j].headline,
                         link: dbNews[j].link,
                         body: dbNews[j].body
