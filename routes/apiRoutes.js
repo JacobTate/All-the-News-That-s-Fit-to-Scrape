@@ -1,8 +1,6 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
-const News = require("../models").News;
-const Note = require("../models").Note;
-const Saved = require("../models").Saved;
+const db = require("../models");
 module.exports = function (app) {
     axios.get("https://www.nytimes.com/").then(function (response) {
         const $ = cheerio.load(response.data);
@@ -10,7 +8,7 @@ module.exports = function (app) {
             const headline = $(element).text();
             const link = $(this).find("a").attr("href");
             const body = $(this).find("p.e1n8kpyg0").text();
-            News.create({
+            db.News.create({
                     headline: headline,
                     link: link,
                     body: body
@@ -19,7 +17,7 @@ module.exports = function (app) {
                 .catch(function (err) {});
         });
     });
-    News.find({})
+    db.News.find({})
         .then(function (dbNews) {
             let results = [];
             for (let i = 0; i < dbNews.length; i++) {
@@ -38,7 +36,7 @@ module.exports = function (app) {
         });
 
     app.post("/api/save", function (req, res) {
-        News.find({
+        db.News.find({
                 _id: req.body.id
             })
             .then(function (dbNews) {
@@ -53,13 +51,13 @@ module.exports = function (app) {
             .catch(function () {});
     });
     app.get("/api/saved", function (req, res) {
-        Saved.find({})
+        db.Saved.find({})
             .then(function (dbNews) {
                 res.json(dbNews)
             });
     });
     app.get("/api/saved/delete", function (req, res) {
-        Saved.deleteOne({
+        db.Saved.deleteOne({
             _id: req.query.id
         }, function (err) {
             if (err) return handleError(err);
@@ -68,12 +66,12 @@ module.exports = function (app) {
     app.post("/api/note/save", function (req, res) {
         console.log(req.body.id);
 
-        Note.create({
+        db.Note.create({
                 body: req.body.note
             })
             .then(function (dbNote) {
 
-                return News.findOneAndUpdate({
+                return db.News.findOneAndUpdate({
                     _id: req.body.id
                 }, {
                     $push: {
@@ -89,7 +87,7 @@ module.exports = function (app) {
             })
     });
     app.get("/api/note/findId", function (req, res) {
-        News.find({
+        db.News.find({
             _id: req.query.id
         }).then(dbNews => {
             res.json(dbNews[0].notes)
@@ -97,7 +95,7 @@ module.exports = function (app) {
     });
     app.get("/api/note/find", function (req, res) {
         const noteId = req.query.noteId;
-        Note.find({})
+        db.Note.find({})
             .then(function (dbNote) {
                 var noteArr = [];
                 for (let x = 0; x < dbNote.length; x++) {
@@ -115,7 +113,7 @@ module.exports = function (app) {
     });
     app.get("/api/note/remove", function (req, res) {
         let noteId = req.query.noteId;
-        Note.deleteOne({
+        db.Note.deleteOne({
                 _id: noteId
             })
             .then(function (dbNote) {
@@ -126,12 +124,12 @@ module.exports = function (app) {
     //========================================================================================================
     //routes for the saved notes
     app.post("/api/note/saved/save", function (req, res) {
-        Note.create({
+        db.Note.create({
                 body: req.body.note
             })
             .then(function (dbNote) {
 
-                return Saved.findOneAndUpdate({
+                return db.Saved.findOneAndUpdate({
                     _id: req.body.id
                 }, {
                     $push: {
@@ -147,7 +145,7 @@ module.exports = function (app) {
             })
     });
     app.get("/api/note/saved/findId", function (req, res) {
-        Saved.find({
+        db.Saved.find({
             _id: req.query.id
         }).then(dbNews => {
             res.json(dbNews[0].notes);
@@ -155,7 +153,7 @@ module.exports = function (app) {
     });
     app.get("/api/note/saved/find", function (req, res) {
         const noteId = req.query.noteId; 
-        Note.find({})
+        db.Note.find({})
             .then(function (dbNote) {
                 var noteArr = [];
                 for (let x = 0; x < dbNote.length; x++) { 
@@ -173,7 +171,7 @@ module.exports = function (app) {
     });
     app.get("/api/note/saved/remove", function (req, res) {
         let noteId = req.query.noteId;
-        Note.deleteOne({
+        db.Note.deleteOne({
                 _id: noteId
             })
             .then(function (dbNote) {
